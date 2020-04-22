@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width,initial-scale=1">
+		<meta http-equiv="Access-Control-Allow-Origin" content="*">
+		<title>Ticket Maintenance</title>
+
+		<link rel="stylesheet" href="/bootstrap/bootstrap-4.1.3/css/bootstrap.min.css">
+		<link rel="stylesheet" href="/bootstrap/bootstrap-table/dist/bootstrap-table.css">
+		<link rel="stylesheet" href="/bootstrap/open-iconic/font/css/open-iconic-bootstrap.min.css">
+
+		<script src="/jquery/jquery-3.3.1.min.js"></script>
+		<script src="/bootstrap/bootstrap-4.1.3/js/bootstrap.bundle.min.js"></script>
+		<script src="/bootstrap/bootstrap-4.1.3/js/bootstrap.min.js"></script>
+
+		<script src="/bootstrap/bootstrap-table/dist/bootstrap-table.js"></script>
+		<script src="/bootstrap/bootstrap-table/dist/locale/bootstrap-table-zh-CN.js"></script>
+
+		<script type="text/javascript" src="/bootstrap/bootstrap-table/dist/extensions/export/bootstrap-table-export.js"></script>
+		<script type="text/javascript" src="/bootstrap/bootstrap-table/dist/extensions/bootstrap-table-export/tableExport.js"></script>
+		<script type="text/javascript" src="/bootstrap/bootstrap-table/dist/extensions/bootstrap-table-export/js-xlsx/xlsx.core.min.js"></script>
+		<script type="text/javascript" src="/bootstrap/bootstrap-table/dist/extensions/bootstrap-table-export/FileSaver/FileSaver.min.js"></script>
+
+
+		<style lang="scss" type="text/css">
+			$font-size-base: 0.8rem;
+			$body-bg: rgb(249, 249, 249);
+			$body-color: #111;
+			$theme-colors: ( "primary": #563d7c, );
+		</style>
+	</head>
+
+	<body>
+
+		<!--查询条件-->
+		<form id="search_User">
+			<div style="margin: 2% 0 2% 0; ">
+				<div class="col-lg-12 col-md-12 col-xs-12 col-sm-12">
+					<div style="margin: 0 0 3% 0;">
+						<h4 class="page-title text-left">Ticket Maintenance</h4>
+						<!--<button href="#" class="btn btn-primary float-right"  onclick="onAddUser();">Add User</button> -->
+					</div>
+					<tm-messages :messages="messages"></tm-messages>
+					<div style="height: auto;border:1px solid #C8CBCF">
+						<br />
+						<div class="col-lg-3 col-md-3 col-xs-3 col-sm-3  float-left">
+							<span class="control-label">Application No</span>
+							<div class="controls form-inline">
+								<input class="form-control query-input" name="searchForm.application_no" type="text" style="width: 95%;margin-top: 3%;" placeholder="Enter application no">
+							</div>
+						</div>
+						<div class="col-lg-3 col-md-3 col-xs-3 col-sm-3  float-left">
+							<span class="control-label">Application</span>
+							<div class="controls form-inline">
+								<input class="form-control query-input" name="searchForm.application" type="text" style="width: 95%;margin-top: 3%;" placeholder="Enter application">
+							</div>
+						</div>
+						<div class="col-lg-3 col-md-3 col-xs-3 col-sm-3  float-left">
+							<span class="control-label">Developer</span>
+							<div class="controls form-inline">
+								<input class="form-control query-input" name="searchForm.developer" type="text" style="width: 95%;margin-top: 3%;" placeholder="Enter developer">
+							</div>
+						</div>
+						<div class="col-lg-3 col-md-3 col-xs-3 col-sm-3  float-left">
+							<span class="control-label">Severity</span>
+							<div class="controls form-inline">
+								<input class="form-control query-input" name="searchForm.severity" type="text" style="width: 95%;margin-top: 3%;" value="0" placeholder="Enter severity">
+							</div>
+						</div>
+						<!--查询按钮-->
+						<div class="text-center" style="margin: 8% 0 3% 0;">
+							<input type="button" class="btn btn-primary btn_search" value="Query" onclick="onSerachUser()" />
+						</div>
+
+					</div>
+				</div>
+
+			</div>
+		</form>
+
+		<!--查询结果-->
+		<div class="card-body text-left ">
+			<table id="aigTicketListTable"></table>
+		</div>
+
+
+		<!--新增,编辑信息-->
+		<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h4 class="modal-title text-center" id="editModalLabel">Edit</h4>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					</div>
+					<div class="modal-body">
+
+						<div class="form-group">
+							<label>Application no</label>
+							<input type="text" name="editForm.application_no" class="form-control" placeholder="Enter application no" disabled>
+						</div>
+						<div class="form-group">
+							<label>Estimated</label>
+							<input type="text" name="editForm.estimated_effort" class="form-control required" placeholder="Enter estimated effort" disabled>
+						</div>
+						<div class="form-group">
+							<label>Actual effort</label>
+							<input type="text" name="editForm.actual_effort" class="form-control" placeholder="Enter actual effort">
+						</div>
+						<div class="form-group">
+							<label>Description</label>
+							<textarea class="form-control" rows="3"name="editForm.issue_description"></textarea>
+						</div>				
+						<div class="form-group">
+							<label>Status</label>
+							<select class="selectpicker show-tick form-control" name="editForm.status" data-live-search="true">
+								<option value="Pending for BA Initial Process">Pending for BA Initial Process</option>
+								<option value="Pending for BA Construction Process">Pending for BA Construction Process</option>
+								<option value="In progress">In progress</option>
+								<option value="Resolved">Resolved</option>
+								<option value="Closed">Closed</option>
+							</select>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<input type="hidden" id="editId" />
+						<button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>Cancel</button>
+						<button type="button" id="btn_submit" class="btn btn-primary" data-dismiss="modal" onclick="onEditUserSubmit()"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>Save</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</body>
+
+</html>
+
+<script>
+	$(function() {
+		var columns = [
+			{
+				title: 'ID',
+				field: 'id',
+				align: 'center',
+				valign: 'middle',
+			},
+			{
+				title: 'Application no',
+				field: 'application_no',
+				align: 'center',
+				valign: 'middle',
+			},
+			{
+				title: 'Application',
+				field: 'application',
+				align: 'center',
+			},
+			{
+				title: 'BA',
+				field: 'ba_in_charge',
+				align: 'center',
+			},
+			{
+				title: 'Estimated',
+				field: 'estimated_effort',
+				align: 'center',
+			},
+			{
+				title: 'Actual effort',
+				field: 'actual_effort',
+				align: 'center',
+			},
+			{
+				title: 'Issue description',
+				field: 'issue_description',
+				align: 'center',
+			},
+			{
+				title: 'Severity',
+				field: 'severity',
+				align: 'center',
+			},
+			{
+				title: 'Status',
+				field: 'status',
+				align: 'center',
+			},
+			{
+				title: 'Actions',
+				field: 'id',
+				align: 'center',
+				formatter: function(value, row, index) {
+					var e = '<button href="#" class="btn btn-primary"  onclick="onEditUser(\'' + row.id + '\')">Edit</button> ';
+					return e;
+				}
+			}
+		];
+		onQuery(columns);
+	});
+
+	function onQuery(columns) {
+		var dataurl = '/aig/ticket/load'
+		$('#aigTicketListTable').bootstrapTable({
+			url: dataurl,
+			idePagination: "server",
+			method: "POST",
+			dataType: "json",
+			contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+			//contentType: "application/x-json",
+			striped: true, //隔行变色
+			cache: false, //是否使用缓存
+			showColumns: true, // 列
+			//toobar:'#toolbar',
+			pagination: true, //分页
+			paginationLoop: false,
+			paginationPreText: '上一页',
+			paginationNextText: '下一页',
+			//showFooter:true,//显示列脚
+			//showRefresh:true,//显示刷新
+			showPaginationSwitch: false, //是否显示数据条数选择框
+			sortable: false, //是否启用排序
+			singleSelect: false,
+			search: false, //显示搜索框
+			buttonsAlign: "right", //按钮对齐方式
+			showRefresh: false, //是否显示刷新按钮
+			sidePagination: "server", //服务端处理分页
+			pageNumber: 1,
+			pageSize: 8,
+			pageList: [5, 8, 10, 25, 50, 100],
+			undefinedText: '--',
+			uniqueId: "id", //每一行的唯一标识，一般为主键列
+
+			showExport: true,
+			exportDataType: 'all',
+			exportTypes: ['excel', 'xlsx'], //导出文件类型
+			exportOptions: { //ignoreColumn: [0,0],
+				fileName: '数据导出', //文件名称设置
+				worksheetName: 'Sheet1', //表格工作区名称
+				tableName: '',
+				excelstyles: ['background-color', 'color', 'font-size', 'font-weight'],
+			},
+
+			queryParamsType: '',
+			queryParams: queryParams, //传递参数（*）
+			columns: columns,
+			onLoadSuccess: function(data) { //加载成功时执行
+			},
+			onLoadError: function(data) {
+				//showTips("数据加载失败！");
+			},
+			onDblClickRow: function(row, $element) {
+				var id = row.ID;
+				EditViewById(id, 'view');
+			},
+		});
+
+		//得到查询的参数
+		function queryParams(params) {
+			var temp = { //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
+				pageSize: params.pageSize, //页面大小
+				pageNumber: params.pageNumber, //页码
+				application_no: $("*[name='searchForm.application_no']").val(), //后台请求传的查询参数
+				application: $("*[name='searchForm.application']").val(),
+				developer: $("*[name='searchForm.developer']").val(),
+				severity: $("*[name='searchForm.severity']").val()
+			};
+			return temp;
+		};
+	}
+
+	//搜索
+	function onSerachUser() {
+		$("#aigTicketListTable").bootstrapTable('refresh');
+	}
+
+
+	//更新弹框
+	function onEditUser(id) {
+		$.ajax({
+			url: "/aig/ticket/loadDetail", //请求的url地址
+			dataType: "json", //返回格式为json
+			async: false, //请求是否异步，默认为异步，这也是ajax重要特性
+			data: {
+				"id": id
+			}, //参数值,键值对
+			type: "POST", //请求方式
+			beforeSend: function() {
+				//请求前的处理
+			},
+			success: function(req) {
+				//请求成功处理
+				$("#editModalLabel").text("Edit ticket");
+				$('#editId').val(req.rows.id); //给会话中的隐藏属性deleteId赋值
+				$("*[name='editForm.application_no']").val(req.rows.application_no);
+				$("*[name='editForm.estimated_effort']").val(req.rows.estimated_effort);
+				$("*[name='editForm.actual_effort']").val(req.rows.actual_effort);
+				$("*[name='editForm.issue_description']").val(req.rows.issue_description);
+				$("*[name='editForm.status']").val(req.rows.status);
+			},
+			complete: function() {
+				//请求完成的处理
+				$('#editModal').modal();
+			},
+			error: function() {
+				//请求出错处理
+			}
+		});
+	}
+
+	//更新提交
+	function onEditUserSubmit() {
+		$.ajax({
+			url: "/aig/ticket/update", //请求的url地址
+			dataType: "json", //返回格式为json
+			async: false, //请求是否异步，默认为异步，这也是ajax重要特性
+			data: {
+				"id": $.trim($("#editId").val()),
+				actual_effort: $("*[name='editForm.actual_effort']").val(),
+				issue_description: $("*[name='editForm.issue_description']").val(),
+				status: $("*[name='editForm.status']").val()
+			}, //参数值,键值对
+			type: "POST", //请求方式
+			beforeSend: function() {
+				//请求前的处理
+			},
+			success: function(req) {
+				//请求成功处理
+			},
+			complete: function() {
+				//请求完成的处理
+				//刷新bootstrap table数据
+				$("#aigTicketListTable").bootstrapTable('refresh');
+			},
+			error: function() {
+				//请求出错处理
+			}
+		});
+	}
+</script>

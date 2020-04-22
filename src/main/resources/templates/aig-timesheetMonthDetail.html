@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width,initial-scale=1">
+		<meta http-equiv="Access-Control-Allow-Origin" content="*">
+		<title>Timesheet Summary</title>
+
+		<link rel="stylesheet" href="/bootstrap/bootstrap-4.1.3/css/bootstrap.min.css">
+		<link rel="stylesheet" href="/bootstrap/bootstrap-table/dist/bootstrap-table.css">
+		<link rel="stylesheet" href="/bootstrap/open-iconic/font/css/open-iconic-bootstrap.min.css">
+
+		<script src="/jquery/jquery-3.3.1.min.js"></script>
+		<script src="/bootstrap/bootstrap-4.1.3/js/bootstrap.bundle.min.js"></script>
+		<script src="/bootstrap/bootstrap-4.1.3/js/bootstrap.min.js"></script>
+
+		<script src="/bootstrap/bootstrap-table/dist/bootstrap-table.js"></script>
+		<script src="/bootstrap/bootstrap-table/dist/locale/bootstrap-table-zh-CN.js"></script>
+
+		<script type="text/javascript" src="/bootstrap/bootstrap-table/dist/extensions/export/bootstrap-table-export.js"></script>
+		<script type="text/javascript" src="/bootstrap/bootstrap-table/dist/extensions/bootstrap-table-export/tableExport.js"></script>
+		<script type="text/javascript" src="/bootstrap/bootstrap-table/dist/extensions/bootstrap-table-export/js-xlsx/xlsx.core.min.js"></script>
+		<script type="text/javascript" src="/bootstrap/bootstrap-table/dist/extensions/bootstrap-table-export/FileSaver/FileSaver.min.js"></script>
+
+
+		<style lang="scss" type="text/css">
+			$font-size-base: 0.8rem;
+			$body-bg: rgb(249, 249, 249);
+			$body-color: #111;
+			$theme-colors: ( "primary": #563d7c, );
+		</style>
+	</head>
+
+	<body>
+
+		<!--查询条件-->
+		<form id="search_User">
+			<div style="margin: 2% 0 2% 0; ">
+				<div class="col-lg-12 col-md-12 col-xs-12 col-sm-12">
+					<div style="margin: 0 0 3% 0;">
+						<h4 class="page-title text-left">Timesheet Summary</h4>
+					</div>
+					<tm-messages :messages="messages"></tm-messages>
+					<div style="height: auto;border:1px solid #C8CBCF">
+						<br />
+						<div class="col-lg-4 col-md-4 col-xs-4 col-sm-4  float-left">
+							<span class="control-label">User name</span>
+							<div class="controls form-inline">
+								<input class="form-control query-input" name="searchForm.user_name" type="text" style="width: 95%;margin-top: 3%;" placeholder="Enter User name">
+							</div>
+						</div>
+
+						<div class="col-lg-4 col-md-4 col-xs-4 col-sm-4  float-left">
+							<span class="control-label">Year</span>
+							<div class="controls form-inline">
+								<select class="selectpicker show-tick form-control" name="searchForm.year" data-live-search="true" style="width: 95%;margin-top: 3%;">
+									<option>请选择年份</option>
+									<option value="2018">2018</option>
+									<option value="2019">2019</option>
+									<option value="2020">2020</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-lg-4 col-md-4 col-xs-4 col-sm-4  float-left">
+							<span class="control-label">Month</span>
+							<div class="controls form-inline">
+								<select class="selectpicker show-tick form-control" name="searchForm.month" data-live-search="true" style="width: 95%;margin-top: 3%;">
+									<option>请选择月份</option>
+									<option value="1">1月</option>
+									<option value="2">2月</option>
+									<option value="3">3月</option>
+									<option value="4">4月</option>
+									<option value="5">5月</option>
+									<option value="6">6月</option>
+									<option value="7">7月</option>
+									<option value="8">8月</option>
+									<option value="9">9月</option>
+									<option value="10">10月</option>
+									<option value="11">11月</option>
+									<option value="12">12月</option>
+								</select>
+							</div>
+						</div>
+						<!--查询按钮-->
+						<div class="text-center" style="margin: 8% 0 3% 0;">
+							<input type="button" class="btn btn-primary btn_search" value="Query" onclick="onSerach()" />
+						</div>
+
+					</div>
+				</div>
+
+			</div>
+		</form>
+		<!--查询结果-->
+		<div class="card-body text-left ">
+			<table id="aigTicketListTable"></table>
+		</div>
+
+
+	</body>
+
+</html>
+
+<script>
+	$(function() {
+		var columns = [
+			{
+				title: 'User Name',
+				field: 'user_name',
+				align: 'center',
+				valign: 'middle',
+			},
+			{
+				title: 'Year',
+				field: 'year',
+				align: 'center',
+			},
+			{
+				title: 'Month',
+				field: 'month',
+				align: 'center',
+			},
+			{
+				title: 'Ticket Count',
+				field: 'ticket_count',
+				align: 'center',
+			},
+			{
+				title: 'Total Timesheet',
+				field: 'total_timesheet',
+				align: 'center',
+			}		
+			/*{
+				title: 'Actions',
+				field: 'id',
+				align: 'center',
+				formatter: function(value, row, index) {
+					var e = '<button href="#" class="btn btn-primary"  onclick="onEditUser(\'' + row.id + '\')">Edit</button> ';
+					return e;
+				}
+			}*/
+		];
+		onQuery(columns);
+	});
+
+	function onQuery(columns) {
+		var dataurl = '/aig/timesheet/summary/load'
+		$('#aigTicketListTable').bootstrapTable({
+			url: dataurl,
+			idePagination: "server",
+			method: "POST",
+			dataType: "json",
+			contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+			//contentType: "application/x-json",
+			striped: true, //隔行变色
+			cache: false, //是否使用缓存
+			showColumns: true, // 列
+			//toobar:'#toolbar',
+			pagination: true, //分页
+			paginationLoop: false,
+			paginationPreText: '上一页',
+			paginationNextText: '下一页',
+			//showFooter:true,//显示列脚
+			//showRefresh:true,//显示刷新
+			showPaginationSwitch: false, //是否显示数据条数选择框
+			sortable: false, //是否启用排序
+			singleSelect: false,
+			search: false, //显示搜索框
+			buttonsAlign: "right", //按钮对齐方式
+			showRefresh: false, //是否显示刷新按钮
+			sidePagination: "server", //服务端处理分页
+			pageNumber: 1,
+			pageSize: 8,
+			pageList: [5, 8, 10, 25, 50, 100],
+			undefinedText: '--',
+			uniqueId: "id", //每一行的唯一标识，一般为主键列
+
+			showExport: true,
+			exportDataType: 'all',
+			exportTypes: ['excel', 'xlsx'], //导出文件类型
+			exportOptions: { //ignoreColumn: [0,0],
+				fileName: '数据导出', //文件名称设置
+				worksheetName: 'Sheet1', //表格工作区名称
+				tableName: '',
+				excelstyles: ['background-color', 'color', 'font-size', 'font-weight'],
+			},
+
+			queryParamsType: '',
+			queryParams: queryParams, //传递参数（*）
+			columns: columns,
+			onLoadSuccess: function(data) { //加载成功时执行
+			},
+			onLoadError: function(data) {
+				//showTips("数据加载失败！");
+			},
+			onDblClickRow: function(row, $element) {
+				var id = row.ID;
+				EditViewById(id, 'view');
+			},
+		});
+
+		//得到查询的参数
+		function queryParams(params) {
+			var temp = { //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
+				pageSize: params.pageSize, //页面大小
+				pageNumber: params.pageNumber, //页码
+				user_name: $("*[name='searchForm.user_name']").val(), //后台请求传的查询参数
+				year: $("*[name='searchForm.year']").val(),
+				month: $("*[name='searchForm.month']").val()
+			};
+			return temp;
+		};
+	}
+
+	//搜索
+	function onSerach() {
+		$("#aigTicketListTable").bootstrapTable('refresh');
+	}
+</script>

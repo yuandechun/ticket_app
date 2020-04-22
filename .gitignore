@@ -1,0 +1,45 @@
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**
+!**/src/test/**
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+
+### VS Code ###
+.vscode/
+log/aig-ticket.log.2019-08-19.0.gz
+log/aig-ticket.log
+log/aig-ticket.log
+log/aig-ticket.log.2020-03-25.0.gz
+log/aig-ticket.log.2020-03-24.0.gz
+log/aig-ticket.log.2020-03-11.0.gz
+log/aig-ticket.log.2020-01-02.0.gz
+log/aig-ticket.log.2019-12-16.0.gz
+log/aig-ticket.log.2019-12-11.0.gz
+log/aig-ticket.log.2019-11-29.0.gz
+log/aig-ticket.log
+log/aig-ticket.log
+*.log
+*.log

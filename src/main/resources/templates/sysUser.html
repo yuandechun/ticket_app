@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width,initial-scale=1">
+		<meta http-equiv="Access-Control-Allow-Origin" content="*">
+		<title>System User Maintenance</title>
+
+		<link rel="stylesheet" href="/bootstrap/bootstrap-4.1.3/css/bootstrap.min.css">
+		<link rel="stylesheet" href="/bootstrap/bootstrap-table/dist/bootstrap-table.css">
+		<link rel="stylesheet" href="/bootstrap/open-iconic/font/css/open-iconic-bootstrap.min.css">
+		
+		<script type="text/javascript" src="/jquery/jquery-3.3.1.min.js"></script>
+		<script type="text/javascript" src="/bootstrap/bootstrap-4.1.3/js/bootstrap.bundle.min.js"></script>
+		<script type="text/javascript" src="/bootstrap/bootstrap-4.1.3/js/bootstrap.min.js"></script>
+		
+		<script type="text/javascript" src="/bootstrap/bootstrap-table/dist/bootstrap-table.js"></script>
+		<script type="text/javascript" src="/bootstrap/bootstrap-table/dist/locale/bootstrap-table-zh-CN.js"></script>
+
+		<script type="text/javascript" src="/bootstrap/bootstrap-table/dist/extensions/export/bootstrap-table-export.js"></script>
+		<script type="text/javascript" src="/bootstrap/bootstrap-table/dist/extensions/bootstrap-table-export/tableExport.js"></script>
+		<script type="text/javascript" src="/bootstrap/bootstrap-table/dist/extensions/bootstrap-table-export/js-xlsx/xlsx.core.min.js"></script>
+		<script type="text/javascript" src="/bootstrap/bootstrap-table/dist/extensions/bootstrap-table-export/FileSaver/FileSaver.min.js"></script>
+
+
+		<style lang="scss" type="text/css">
+			$font-size-base: 0.8rem;
+			$body-bg: rgb(249, 249, 249);
+			$body-color: #111;
+			$theme-colors: ( "primary": #563d7c, );
+		</style>
+	</head>
+
+	<body>
+
+		<!--查询条件-->
+		<form id="search_User">
+			<div style="margin: 2% 0 2% 0; ">
+				<div class="col-lg-12 col-md-12 col-xs-12 col-sm-12">
+					<div style="margin: 0 0 3% 0;">
+						<h4 class="page-title">System User Maintenance</h4>
+					</div>
+					<tm-messages :messages="messages"></tm-messages>
+					<div style="height: auto;border:1px solid #C8CBCF">
+						<br />
+						<div class="col-lg-3 col-md-3 col-xs-3 col-sm-3  float-left">
+							<span class="control-label">User name</span>
+							<div class="controls form-inline">
+								<input class="form-control query-input" name="searchForm.username" type="text" style="width: 95%;margin-top: 3%;" placeholder="Enter user name">
+							</div>
+						</div>
+						<div class="col-lg-3 col-md-3 col-xs-3 col-sm-3  float-left">
+							<span class="control-label">Email</span>
+							<div class="controls form-inline">
+								<input class="form-control query-input" name="searchForm.email" type="text" style="width: 95%;margin-top: 3%;" placeholder="Enter mail">
+							</div>
+						</div>
+						<div class="col-lg-3 col-md-3 col-xs-3 col-sm-3  float-left">
+							<span class="control-label">Phone</span>
+							<div class="controls form-inline">
+								<input class="form-control query-input" name="searchForm.phone" type="text" style="width: 95%;margin-top: 3%;" placeholder="Enter phone">
+							</div>
+						</div>
+						<div class="col-lg-3 col-md-3 col-xs-3 col-sm-3  float-left">
+							<span class="control-label">Created By</span>
+							<div class="controls form-inline">
+								<input class="form-control query-input" name="searchForm.createdBy" type="text" style="width: 95%;margin-top: 3%;" placeholder="Enter created by">
+							</div>
+						</div>
+						<!--查询按钮-->
+						<div class="text-center" style="margin: 8% 0 3% 0;">
+							<input type="button" class="btn btn-primary btn_search" value="Query" onclick="onSerachUser()" />
+						</div>
+
+					</div>
+				</div>
+
+			</div>
+		</form>
+
+		<!--查询结果-->
+		<div class="card-body text-left ">
+			<table id="userListTable"></table>
+		</div>
+		
+		
+		<!-- 信息删除确认 -->
+		<div class="modal fade" id="delcfmModel">
+			<div class="modal-dialog">
+				<div class="modal-content message_align">
+					<div class="modal-header">
+						<h6 class="modal-title">Confirm delete</h6>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					</div>
+					<div class="modal-body">
+						<h4 class="modal-title text-center">Do you confirm to delete user?</h4>
+					</div>
+					<div class="modal-footer text-center">
+						<input type="hidden" id="deleteId" />
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+						<a onclick="deleteUserSubmit()" class="btn btn-success" data-dismiss="modal">Delete</a>
+					</div>
+				</div>
+				<!-- /.modal-content -->
+			</div>
+			<!-- /.modal-dialog -->
+		</div>
+		<!-- /.modal -->
+		
+		
+		<!--新增,编辑信息-->
+		<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h4 class="modal-title text-center" id="editModalLabel">Edit</h4>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					</div>
+					<div class="modal-body">
+
+						<div class="form-group">
+							<label>User name</label>
+							<input type="text" name="editForm.userName" class="form-control" placeholder="Enter user name" disabled>
+						</div>
+						<div class="form-group">
+							<label>Email</label>
+							<input type="text" name="editForm.email" class="form-control required" placeholder="Enter email">
+						</div>
+						<div class="form-group">
+							<label>Phone</label>
+							<input type="text" name="editForm.phone" class="form-control" placeholder="Enter phone">
+						</div>
+						<div class="form-group">
+							<label for="txt_statu">Address</label>
+							<input type="text" name="editForm.address" class="form-control" id="txt_statu" placeholder="Enter address">
+						</div>
+					</div>
+					<div class="modal-footer">
+						<input type="hidden" id="editId" />
+						<button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>Cancel</button>
+						<button type="button" id="btn_submit" class="btn btn-primary" data-dismiss="modal" onclick="onEditUserSubmit()"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>Save</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		
+		
+	</body>
+
+</html>
+
+<script>
+	$(function() {
+		var columns = [
+			{
+				title: 'ID',
+				field: 'id',
+				align: 'center',
+			},
+			{
+				title: 'User name',
+				field: 'userName',
+				align: 'center',
+			},
+			{
+				title: 'Email',
+				field: 'email',
+				align: 'center',
+			},
+			{
+				title: 'Phone',
+				field: 'phone',
+				align: 'center',
+			},
+			{
+				title: 'Created date',
+				field: 'createdDate',
+				align: 'center',
+			},
+			{
+				title: 'Created By',
+				field: 'createdBy',
+				align: 'center',
+			},
+			{
+				title: 'Actions',
+				field: 'id',
+				align: 'center',
+				formatter: function(value, row, index) {
+					var e = '<button href="#" class="btn btn-primary"  onclick="onEditUser(\'' + row.id + '\')">Edit</button> ';
+					var d = '<button href="#" class="btn btn-danger"   onclick="onDeleteUser(\'' + row.id + '\')">Delete</button> ';
+					return e + d;
+				}
+			}
+		];
+		onQuery(columns);
+	});
+
+	function onQuery(columns) {
+		var dataurl = '/sys/user/load'
+		$('#userListTable').bootstrapTable({
+			url: dataurl,
+			idePagination: "server",
+			method: "POST",
+			dataType: "json",
+			contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+			//contentType: "application/x-json",
+			striped: true, //隔行变色
+			cache: false, //是否使用缓存
+			showColumns: true, // 列
+			//toobar:'#toolbar',
+			pagination: true, //分页
+			paginationLoop: false,
+			paginationPreText: '上一页',
+			paginationNextText: '下一页',
+			//showFooter:true,//显示列脚
+			//showRefresh:true,//显示刷新
+			showPaginationSwitch: false, //是否显示数据条数选择框
+			sortable: false, //是否启用排序
+			singleSelect: false,
+			search: false, //显示搜索框
+			buttonsAlign: "right", //按钮对齐方式
+			showRefresh: false, //是否显示刷新按钮
+			sidePagination: "server", //服务端处理分页
+			pageNumber: 1,
+			pageSize: 8,
+			pageList: [5, 8, 10, 25, 50, 100],
+			undefinedText: '--',
+			uniqueId: "id", //每一行的唯一标识，一般为主键列
+
+			showExport: true,
+			exportDataType: 'all',
+			exportTypes: ['excel', 'xlsx'], //导出文件类型
+			exportOptions: { //ignoreColumn: [0,0],
+				fileName: '数据导出', //文件名称设置
+				worksheetName: 'Sheet1', //表格工作区名称
+				tableName: '',
+				excelstyles: ['background-color', 'color', 'font-size', 'font-weight'],
+			},
+
+			queryParamsType: '',
+			queryParams: queryParams, //传递参数（*）
+			columns: columns,
+			onLoadSuccess: function(data) { //加载成功时执行
+			},
+			onLoadError: function(data) {
+			},
+			onDblClickRow: function(row, $element) {
+				var id = row.ID;
+				EditViewById(id, 'view');
+			},
+		});
+
+		//得到查询的参数
+		function queryParams(params) {
+			var temp = { //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
+				pageSize: params.pageSize, //页面大小
+				pageNumber: params.pageNumber, //页码
+				userName: $("*[name='searchForm.username']").val(), //后台请求传的查询参数
+				phone: $("*[name='searchForm.phone']").val(),
+				email: $("*[name='searchForm.email']").val(),
+				createdBy: $("*[name='searchForm.createdBy']").val()
+			};
+			return temp;
+		};
+	}
+
+	/*//新增
+	function onAddUser() {
+		$("#userListTable").bootstrapTable('refresh');
+	}
+  */
+	//搜索
+	function onSerachUser() {
+		$("#userListTable").bootstrapTable('refresh');
+	}
+  
+	//删除弹框
+	function onDeleteUser(id) {
+		$('#deleteId').val(id); //给会话中的隐藏属性deleteId赋值
+		$('#delcfmModel').modal();
+	}
+	
+	//删除提交
+	function deleteUserSubmit() {
+		var deleteId = $.trim($("#deleteId").val()); //获取会话中的隐藏属性deleteId
+		$.ajax({
+			url: "/sys/user/delete", //请求的url地址
+			dataType: "json", //返回格式为json
+			async: false, //请求是否异步，默认为异步，这也是ajax重要特性
+			data: {
+				"id": deleteId
+			}, //参数值,键值对
+			type: "POST", //请求方式
+			beforeSend: function() {
+				//请求前的处理
+			},
+			success: function(req) {
+				//请求成功处理
+			},
+			complete: function() {
+				//请求完成的处理
+				//刷新bootstrap table数据
+				$("#userListTable").bootstrapTable('refresh');
+			},
+			error: function() {
+				//请求出错处理
+			}
+		});	
+	}
+	
+	
+	//更新弹框
+	function onEditUser(id) {
+		$.ajax({
+			url: "/sys/user/loadDetail", //请求的url地址
+			dataType: "json", //返回格式为json
+			async: false, //请求是否异步，默认为异步，这也是ajax重要特性
+			data: {
+				"id": id
+			}, //参数值,键值对
+			type: "POST", //请求方式
+			beforeSend: function() {
+				//请求前的处理
+			},
+			success: function(req) {
+				//请求成功处理
+				$("#editModalLabel").text("Edit user");
+				$('#editId').val(req.rows.id); //给会话中的隐藏属性deleteId赋值
+				$("*[name='editForm.userName']").val(req.rows.userName);
+				$("*[name='editForm.phone']").val(req.rows.phone);
+				$("*[name='editForm.address']").val(req.rows.address);
+				$("*[name='editForm.email']").val(req.rows.email);
+			},
+			complete: function() {
+				//请求完成的处理
+				$('#editModal').modal();
+			},
+			error: function() {
+				//请求出错处理
+			}
+		});
+	}
+
+	//更新提交
+	function onEditUserSubmit() {
+		$.ajax({
+			url: "/sys/user/update", //请求的url地址
+			dataType: "json", //返回格式为json
+			async: false, //请求是否异步，默认为异步，这也是ajax重要特性
+			data: {
+				"id": $.trim($("#editId").val()),
+				phone: $("*[name='editForm.phone']").val(),
+				email: $("*[name='editForm.email']").val(),
+				address: $("*[name='editForm.address']").val()
+			}, //参数值,键值对
+			type: "POST", //请求方式
+			beforeSend: function() {
+				//请求前的处理
+			},
+			success: function(req) {
+				//请求成功处理
+			},
+			complete: function() {
+				//请求完成的处理
+				//刷新bootstrap table数据
+				$("#userListTable").bootstrapTable('refresh');
+			},
+			error: function() {
+				//请求出错处理
+			}
+		});
+	}
+	
+</script>

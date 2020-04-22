@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+        namespace="com.pms.aigticketmanage.repository.AigTicketRepository">
+
+    <resultMap id="CodeFieldMap"
+               type="com.pms.aigticketmanage.pojo.AigTicket">
+        <id column="id" property="id"/>
+        <result column="application" property="application"/>
+        <result column="application_no" property="application_no"/>
+        <result column="profit_center" property="profit_center"/>
+        <result column="issue_description" property="issue_description"/>
+        <result column="applicant_name" property="applicant_name"/>
+        <result column="lOB" property="lOB"/>
+        <result column="change_type" property="change_type"/>
+        <result column="code_change" property="code_change"/>
+        <result column="branch" property="branch"/>
+        <result column="department" property="department"/>
+        <result column="submission_date" property="submission_date"/>
+        <result column="pending_MthOrYr" property="pending_MthOrYr"/>
+        <result column="request_type" property="request_type"/>
+        <result column="sub_type" property="sub_type"/>
+        <result column="priority" property="priority"/>
+        <result column="severity" property="severity"/>
+        <result column="team_in_charge" property="team_in_charge"/>
+        <result column="assign_dev_team_date"
+                property="assign_dev_team_date"/>
+        <result column="ba_in_charge" property="ba_in_charge"/>
+        <result column="data_owner_id" property="data_owner_id"/>
+        <result column="developer" property="developer"/>
+        <result column="send_dev_estimation_time"
+                property="send_dev_team_for_estimation_time"/>
+        <result column="send_estimation_to_BA_time"
+                property="send_estimation_to_BA_team_time"/>
+        <result column="estimated_effort" property="estimated_effort"/>
+        <result column="actual_effort" property="actual_effort"/>
+        <result column="test_results" property="test_results"/>
+        <result column="target_delivery_date"
+                property="target_delivery_date"/>
+        <result column="status" property="status"/>
+        <result column="close_date" property="close_date"/>
+        <result column="build_no" property="build_no"/>
+        <result column="build_release_date"
+                property="build_release_date"/>
+        <result column="build_status" property="build_status"/>
+        <result column="pot_review" property="pot_review"/>
+        <result column="pss_for_uat" property="pss_for_uat"/>
+        <result column="uat_date" property="uat_date"/>
+        <result column="uat_status" property="uat_status"/>
+        <result column="pss_for_prod" property="pss_for_prod"/>
+        <result column="production_date" property="production_date"/>
+        <result column="production_status" property="production_status"/>
+        <result column="solution" property="solution"/>
+        <result column="comments" property="comments"/>
+        <result column="supervisor_approved_time"
+                property="supervisor_approved_time"/>
+        <result column="it_manager_approved_time"
+                property="it_manager_approved_time"/>
+        <result column="data_owner_approved_time"
+                property="data_owner_approved_time"/>
+        <result column="dev_resolved_time" property="dev_resolved_time"/>
+        <result column="send_user_uat_confirm_time"
+                property="send_user_uat_confirm_time"/>
+        <result column="user_uat_confirmed_time"
+                property="user_uat_confirmed_time"/>
+        <result column="ba_resolved_time" property="ba_resolved_time"/>
+        <result column="send_user_prod_confirm_time"
+                property="send_user_prod_confirm_time"/>
+        <result column="ba_send_acknowledge_time"
+                property="ba_send_acknowledge_time"/>
+        <result column="dev_send_acknowledge_time"
+                property="dev_send_acknowledge_time"/>
+        <result column="survey_results" property="survey_results"/>
+        <result column="survey_remarks" property="survey_remarks"/>
+        <result column="edit" property="edit"/>
+    </resultMap>
+
+    <!-- query aig ticket by id -->
+    <select id="loadAigTicketById" resultMap="CodeFieldMap" parameterType="com.pms.aigticketmanage.pojo.AigTicket">
+        select * from aig_ticket where 1=1 and id=#{id}
+    </select>
+
+    <!-- query all aig ticket -->
+    <select id="loadAllAigTicket" resultMap="CodeFieldMap" parameterType="com.pms.aigticketmanage.pojo.AigTicket">
+        select * from aig_ticket where 1=1
+        <if test="application_no != null and application_no != ''">
+            and application_no = #{application_no}
+        </if>
+        <if test="application != null and application != ''">
+            and application = #{application}
+        </if>
+        <if test="developer != null and developer != ''">
+            and developer = #{developer}
+        </if>
+        <if test="severity != null and severity != '' and severity != '0'">
+            and severity = #{severity}
+        </if>
+        and application in(
+        'S3B',
+        'Intranet',
+        'eMarine',
+        'ALPS',
+        'PAW',
+        'DMW',
+        'AML',
+        'CIRC',
+        'SRI',
+        'FARS',
+        'eCashman',
+        'SDI/SDI+',
+        'eMeasure &amp; Reporting',
+        'EMMA',
+        'Goald',
+        'C-link',
+        'ECM II',
+        'eDeclaration',
+        'eDeclaration - EL',
+        'CIRC web Enquiry',
+        'AH Beijing IA',
+        'eDeclaration-Prl',
+        'Shanghai IA',
+        'TWS',
+        'CIRC PAI',
+        'Seamless Integration'
+        )
+        order by submission_date desc
+    </select>
+
+
+    <!-- query ticket  user by ticket no -->
+    <select id="loadAigTicketByTicketNo" resultMap="CodeFieldMap"
+            parameterType="com.pms.aigticketmanage.pojo.AigTicket">
+        select * from aig_ticket where 1=1 and application_no=#{application_no}
+    </select>
+
+
+    <update id="updateAigTicket"
+            parameterType="com.pms.aigticketmanage.pojo.AigTicket">
+        update aig_ticket
+        set status = #{status}
+        <if test="actual_effort != null and actual_effort != ''">
+            , actual_effort = #{actual_effort}
+        </if>
+        <if test="issue_description != null and issue_description != ''">
+            , issue_description = #{issue_description}
+        </if>
+        where 1=1 and id=#{id}
+    </update>
+
+
+    <!-- update aig ticket by upload ticket excel -->
+    <update id="updateAigTicketByExcel" parameterType="com.pms.aigticketmanage.pojo.AigTicket">
+        update aig_ticket
+        set estimated_effort = #{estimated_effort}
+        where 1=1 and application_no=#{application_no}
+    </update>
+
+    <!--delete ticket info by id -->
+    <delete id="deleteAigTicket" parameterType="com.pms.aigticketmanage.pojo.AigTicket">
+        delete from aig_ticket where 1=1 and application_no=#{application_no}
+    </delete>
+
+
+    <!-- save aig ticket -->
+    <select id="saveAigTicketList" resultMap="CodeFieldMap" parameterType="java.util.List">
+        INSERT INTO aig_ticket
+        (
+        application ,
+        application_no ,
+        profit_center ,
+        issue_description ,
+        applicant_name ,
+        lOB ,
+        change_type ,
+        code_change ,
+        branch ,
+        department ,
+        submission_date ,
+        pending_MthOrYr ,
+        request_type ,
+        sub_type ,
+        priority ,
+        severity ,
+        team_in_charge ,
+        assign_dev_team_date ,
+        ba_in_charge ,
+        data_owner_id ,
+        developer ,
+        send_dev_estimation_time ,
+        send_estimation_to_BA_time ,
+        estimated_effort ,
+        actual_effort ,
+        test_results ,
+        target_delivery_date ,
+        status ,
+        close_date ,
+        build_no ,
+        build_release_date ,
+        build_status ,
+        pot_review ,
+        pss_for_uat ,
+        uat_date ,
+        uat_status ,
+        pss_for_prod ,
+        production_date ,
+        production_status ,
+        solution ,
+        comments ,
+        supervisor_approved_time ,
+        it_manager_approved_time ,
+        data_owner_approved_time ,
+        dev_resolved_time ,
+        send_user_uat_confirm_time ,
+        user_uat_confirmed_time ,
+        ba_resolved_time ,
+        send_user_prod_confirm_time ,
+        ba_send_acknowledge_time ,
+        dev_send_acknowledge_time ,
+        survey_results ,
+        survey_remarks ,
+        edit
+        )
+        VALUES
+        <foreach collection="list" item="ticket" index="index" separator=",">
+            (
+            #{ticket.application },
+            #{ticket.application_no },
+            #{ticket.profit_center },
+            #{ticket.issue_description },
+            #{ticket.applicant_name },
+            #{ticket.lOB },
+            #{ticket.change_type },
+            #{ticket.code_change },
+            #{ticket.branch },
+            #{ticket.department },
+            #{ticket.submission_date },
+            #{ticket.pending_MthOrYr },
+            #{ticket.request_type },
+            #{ticket.sub_type },
+            #{ticket.priority },
+            #{ticket.severity },
+            #{ticket.team_in_charge },
+            #{ticket.assign_dev_team_date },
+            #{ticket.ba_in_charge },
+            #{ticket.data_owner_id },
+            #{ticket.developer },
+            #{ticket.send_dev_team_for__estimation_time },
+            #{ticket.send_estimation_to_BA_team_time },
+            #{ticket.estimated_effort },
+            #{ticket.actual_effort },
+            #{ticket.test_results },
+            #{ticket.target_delivery_date },
+            #{ticket.status },
+            #{ticket.close_date },
+            #{ticket.build_no },
+            #{ticket.build_release_date },
+            #{ticket.build_status },
+            #{ticket.pot_review },
+            #{ticket.pss_for_uat },
+            #{ticket.uat_date },
+            #{ticket.uat_status },
+            #{ticket.pss_for_prod },
+            #{ticket.production_date },
+            #{ticket.production_status },
+            #{ticket.solution },
+            #{ticket.comments },
+            #{ticket.supervisor_approved_time },
+            #{ticket.it_manager_approved_time },
+            #{ticket.data_owner_approved_time },
+            #{ticket.dev_resolved_time },
+            #{ticket.send_user_uat_confirm_time },
+            #{ticket.user_uat_confirmed_time },
+            #{ticket.ba_resolved_time },
+            #{ticket.send_user_prod_confirm_time },
+            #{ticket.ba_send_acknowledge_time },
+            #{ticket.dev_send_acknowledge_time },
+            #{ticket.survey_results },
+            #{ticket.survey_remarks },
+            #{ticket.edit }
+            )
+        </foreach>
+    </select>
+
+
+    <!-- save aig ticket -->
+    <select id="saveAigTicket" resultMap="CodeFieldMap" parameterType="com.pms.aigticketmanage.pojo.AigTicket">
+        INSERT INTO aig_ticket
+        (
+        application ,
+        application_no ,
+        profit_center ,
+        issue_description ,
+        applicant_name ,
+        lOB ,
+        change_type ,
+        code_change ,
+        branch ,
+        department ,
+        submission_date ,
+        pending_MthOrYr ,
+        request_type ,
+        sub_type ,
+        priority ,
+        severity ,
+        team_in_charge ,
+        assign_dev_team_date ,
+        ba_in_charge ,
+        data_owner_id ,
+        developer ,
+        send_dev_estimation_time ,
+        send_estimation_to_BA_time ,
+        estimated_effort ,
+        actual_effort ,
+        test_results ,
+        target_delivery_date ,
+        status ,
+        close_date ,
+        build_no ,
+        build_release_date ,
+        build_status ,
+        pot_review ,
+        pss_for_uat ,
+        uat_date ,
+        uat_status ,
+        pss_for_prod ,
+        production_date ,
+        production_status ,
+        solution ,
+        comments ,
+        supervisor_approved_time ,
+        it_manager_approved_time ,
+        data_owner_approved_time ,
+        dev_resolved_time ,
+        send_user_uat_confirm_time ,
+        user_uat_confirmed_time ,
+        ba_resolved_time ,
+        send_user_prod_confirm_time ,
+        ba_send_acknowledge_time ,
+        dev_send_acknowledge_time ,
+        survey_results ,
+        survey_remarks ,
+        edit
+        )
+        VALUES
+        (
+        #{application },
+        #{application_no },
+        #{profit_center },
+        #{issue_description },
+        #{applicant_name },
+        #{lOB },
+        #{change_type },
+        #{code_change },
+        #{branch },
+        #{department },
+        #{submission_date },
+        #{pending_MthOrYr },
+        #{request_type },
+        #{sub_type },
+        #{priority },
+        #{severity },
+        #{team_in_charge },
+        #{assign_dev_team_date },
+        #{ba_in_charge },
+        #{data_owner_id },
+        #{developer },
+        #{send_dev_team_for__estimation_time },
+        #{send_estimation_to_BA_team_time },
+        #{estimated_effort },
+        #{actual_effort },
+        #{test_results },
+        #{target_delivery_date },
+        #{status },
+        #{close_date },
+        #{build_no },
+        #{build_release_date },
+        #{build_status },
+        #{pot_review },
+        #{pss_for_uat },
+        #{uat_date },
+        #{uat_status },
+        #{pss_for_prod },
+        #{production_date },
+        #{production_status },
+        #{solution },
+        #{comments },
+        #{supervisor_approved_time },
+        #{it_manager_approved_time },
+        #{data_owner_approved_time },
+        #{dev_resolved_time },
+        #{send_user_uat_confirm_time },
+        #{user_uat_confirmed_time },
+        #{ba_resolved_time },
+        #{send_user_prod_confirm_time },
+        #{ba_send_acknowledge_time },
+        #{dev_send_acknowledge_time },
+        #{survey_results },
+        #{survey_remarks },
+        #{edit }
+        )
+    </select>
+
+
+</mapper>

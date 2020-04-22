@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.common.usermanage.repository.SysUserRepository">
+
+    <resultMap id="CodeFieldMap" type="com.common.usermanage.pojo.SysUser">
+        <id column="id" property="id"/>
+        <result column="user_name" property="userName"/>
+        <result column="password" property="password"/>
+        <result column="email" property="email"/>
+        <result column="phone" property="phone"/>
+        <result column="address" property="address"/>
+        <result column="remarks" property="remarks"/>
+        <result column="timestamp" property="timestamp"/>
+    </resultMap>
+
+    <!-- query all sys user -->
+    <select id="loadAllSysUser" resultMap="CodeFieldMap" parameterType="com.common.usermanage.pojo.SysUser">
+        select * from aig_user where 1=1
+        <if test="userName != null and userName != ''">
+            and user_name = #{userName}
+        </if>
+        <if test="email != null and email != ''">
+            and email = #{email}
+        </if>
+        <if test="phone != null and phone != ''">
+            and phone = #{phone}
+        </if>
+        <if test="timestamp != null and timestamp != ''">
+            and timestamp = #{timestamp}
+        </if>
+        order by id desc
+    </select>
+
+    <!--delete sys user info by id -->
+    <delete id="deleteSysUserById" parameterType="int">
+        delete from aig_user where 1=1 and id=#{id}
+    </delete>
+
+    <!--delete sys user info by user name -->
+    <delete id="deleteSysUserByUserNAme" parameterType="string">
+        delete from aig_user where 1=1 user_name = #{userName}
+    </delete>
+
+    <!-- query sys user by id -->
+    <select id="loadSysUserById" resultMap="CodeFieldMap" parameterType="int">
+        select * from aig_user where 1=1 and id=#{id}
+    </select>
+
+    <!-- query sys user by user name -->
+    <select id="loadSysUserByUserName" resultMap="CodeFieldMap" parameterType="string">
+        select * from aig_user where 1=1 and user_name = #{userName}
+    </select>
+
+    <!--update comm sys user info -->
+    <update id="updateSysUser" parameterType="com.common.usermanage.pojo.SysUser">
+        update aig_user
+        set email = #{email}
+        <if test="userName != null and userName != ''">
+            , user_name = #{userName}
+        </if>
+        <if test="phone != null and phone != ''">
+            , phone = #{phone}
+        </if>
+        <if test="address != null and address != ''">
+            , address = #{address}
+        </if>
+        <if test="timestamp != null and timestamp != ''">
+            , timestamp = #{timestamp}
+        </if>
+        where id=#{id}
+    </update>
+
+
+    <!-- add sys user -->
+    <insert id="addSysUser" parameterType="com.common.usermanage.pojo.SysUser">
+        insert into aig_user
+        (
+        user_name,
+        password,
+        email,
+        phone,
+        address,
+        remarks,
+        timestamp
+        )
+        values
+        (
+        #{userName},
+        #{password},
+        #{email},
+        #{phone},
+        #{address},
+        #{remarks},
+        #{timestamp}
+        )
+    </insert>
+
+</mapper>

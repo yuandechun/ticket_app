@@ -1,0 +1,66 @@
+
+
+CREATE TABLE [dbo].[aig_ticket](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[application] [varchar](100) NULL DEFAULT (NULL),
+	[application_no] [varchar](20) NOT NULL,
+	[profit_center] [varchar](100) NULL DEFAULT (NULL),
+	[issue_description] [text] NULL,
+	[applicant_name] [varchar](50) NULL DEFAULT (NULL),
+	[lOB] [varchar](100) NULL DEFAULT (NULL),
+	[change_type] [varchar](100) NULL DEFAULT (NULL),
+	[code_change] [varchar](100) NULL DEFAULT (NULL),
+	[branch] [varchar](100) NULL DEFAULT (NULL),
+	[department] [varchar](100) NULL DEFAULT (NULL),
+	[submission_date] [datetime] NULL DEFAULT (NULL),
+	[pending_MthOrYr] [varchar](100) NULL DEFAULT (NULL),
+	[request_type] [varchar](100) NULL DEFAULT (NULL),
+	[sub_type] [varchar](100) NULL DEFAULT (NULL),
+	[priority] [varchar](100) NULL DEFAULT (NULL),
+	[severity] [int] NULL DEFAULT (NULL),
+	[team_in_charge] [varchar](100) NULL DEFAULT (NULL),
+	[assign_dev_team_date] [datetime] NULL DEFAULT (NULL),
+	[ba_in_charge] [varchar](100) NULL DEFAULT (NULL),
+	[data_owner_id] [varchar](100) NULL DEFAULT (NULL),
+	[developer] [varchar](100) NULL DEFAULT (NULL),
+	[send_dev_estimation_time] [datetime] NULL DEFAULT (NULL),
+	[send_estimation_to_BA_time] [datetime] NULL DEFAULT (NULL),
+	[estimated_effort] [float] NULL DEFAULT ((0)),
+	[actual_effort] [float] NULL DEFAULT ((0)),
+	[test_results] [text] NULL,
+	[target_delivery_date] [datetime] NULL DEFAULT (NULL),
+	[status] [varchar](100) NULL DEFAULT (NULL),
+	[close_date] [datetime] NULL DEFAULT (NULL),
+	[build_no] [text] NULL,
+	[build_release_date] [datetime] NULL DEFAULT (NULL),
+	[build_status] [varchar](100) NULL DEFAULT (NULL),
+	[pot_review] [varchar](100) NULL DEFAULT (NULL),
+	[pss_for_uat] [varchar](100) NULL DEFAULT (NULL),
+	[uat_date] [datetime] NULL DEFAULT (NULL),
+	[uat_status] [varchar](100) NULL DEFAULT (NULL),
+	[pss_for_prod] [varchar](100) NULL DEFAULT (NULL),
+	[production_date] [datetime] NULL DEFAULT (NULL),
+	[production_status] [varchar](100) NULL DEFAULT (NULL),
+	[solution] [text] NULL,
+	[comments] [text] NULL,
+	[supervisor_approved_time] [datetime] NULL DEFAULT (NULL),
+	[it_manager_approved_time] [datetime] NULL DEFAULT (NULL),
+	[data_owner_approved_time] [datetime] NULL DEFAULT (NULL),
+	[dev_resolved_time] [datetime] NULL DEFAULT (NULL),
+	[send_user_uat_confirm_time] [datetime] NULL DEFAULT (NULL),
+	[user_uat_confirmed_time] [datetime] NULL DEFAULT (NULL),
+	[ba_resolved_time] [datetime] NULL DEFAULT (NULL),
+	[send_user_prod_confirm_time] [datetime] NULL DEFAULT (NULL),
+	[ba_send_acknowledge_time] [datetime] NULL DEFAULT (NULL),
+	[dev_send_acknowledge_time] [datetime] NULL DEFAULT (NULL),
+	[survey_results] [varchar](200) NULL DEFAULT (NULL),
+	[survey_remarks] [varchar](200) NULL DEFAULT (NULL),
+	[edit] [varchar](200) NULL DEFAULT (NULL)
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
+GO
+
+SET ANSI_PADDING OFF
+GO
+
+
