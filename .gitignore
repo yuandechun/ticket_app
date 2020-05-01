@@ -43,3 +43,4 @@ log/aig-ticket.log
 log/aig-ticket.log
 *.log
 *.log
+*.gz
